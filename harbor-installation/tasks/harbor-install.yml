@@ -1,0 +1,75 @@
+---
+- name: Add Harbor Group and User
+  block:
+    - name: Creare Group
+      group:
+        name: "{{ harbor_installation_group }}"
+        state: present
+    - name: Create User 
+      user:
+        name: "{{ harbor_installation_user }}"
+        groups: 
+          - "{{ harbor_installation_group }}"
+          - docker
+          - sudo
+        shell: /bin/bash
+        state: present
+        password: "{{ harbor_installation_user_password }}"
+  become: yes
+  when: harbor_create_user
+
+  
+- name: Harbor Installation
+  unarchive:
+    src: "{{ harbor_repo_url }}"
+    dest: "{{ harbor_installation_path }}"
+    remote_src: yes
+    owner: "{{ harbor_installation_user }}"
+    group: "{{ harbor_installation_group }}"
+  become: yes
+
+- name: Change Harbor Owner
+  file:
+    path: "{{ harbor_installation_path }}harbor"
+    state: directory
+    owner: "{{ harbor_installation_user }}"
+    group: "{{ harbor_installation_group }}"
+    recurse: true
+  become: yes
+
+- name: Habro Config Certifications
+  block:
+    - name: Habor SSL config - Create Direcotry For Certifications files
+      file:
+        path: "{{ ssl_path }}"
+        state: directory
+        owner: "{{ harbor_installation_user }}"
+        group: "{{ harbor_installation_group }}"
+        mode: 0755
+    - name: Habor SSL config - Copy Certifications files
+      copy:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+        owner: "{{ harbor_installation_user }}"
+        group: "{{ harbor_installation_group }}"
+        mode: 0755
+      with_items:
+        - { src: "{{ ssl_cert_name }}", dest: "{{ ssl_cert_path }}" }
+        - { src: "{{ ssl_cert_key_name}}", dest: "{{ ssl_cert_key_path }}" }
+  become: yes
+  when: harbor_https and harbor_deploy_certs
+   
+- name: Update Harbor Configuration
+  template:
+    src: harbor.cfg.j2
+    dest: "{{ harbor_installation_path }}harbor/harbor.cfg"
+    owner: "{{ harbor_installation_user }}"
+    group: "{{ harbor_installation_group }}"
+    mode: 0644
+  become: yes
+
+- name: Start Harbor Registry
+  command: "sudo ./install.sh {{ harbo_installation_options }}"
+  args:
+    chdir: "{{ harbor_installation_path }}/harbor"
+  become: "{{ harbor_installation_user }}"

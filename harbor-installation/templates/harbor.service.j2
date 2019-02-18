@@ -1,0 +1,12 @@
+[Unit]
+Description=Harbor Private Registry  Service
+After=network.target docker.service
+
+[Service]
+Type=simple
+Restart=always
+ExecStart={{ habror_installation_path }}/harbor/install.sh start
+ExecStop={{ habror_installation_path }}/harbor/install.sh stop
+
+[Install]
+WantedBy=multi-user.target

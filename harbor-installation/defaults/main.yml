@@ -1,0 +1,90 @@
+---
+# Edition can be one of: 'ce' (Community Edition) or 'ee' (Enterprise Edition).
+docker_edition: 'ce'
+docker_package: "docker-{{ docker_edition }}"
+docker_package_cli: "{{ docker_package }}-cli"
+docker_package_runtime: containerd.io
+docker_package_state: present
+
+# Service options.
+docker_service_state: started
+docker_service_enabled: true
+docker_restart_handler_state: restarted
+
+# Docker Compose options.
+docker_install_compose: true
+docker_compose_version: "1.23.2"
+docker_compose_path: /usr/local/bin/docker-compose
+
+# Used only for Debian/Ubuntu. Switch 'stable' to 'edge' if needed.
+docker_apt_release_channel: stable
+docker_apt_arch: amd64
+docker_apt_repository: "deb [arch={{ docker_apt_arch }}] https://download.docker.com/linux/{{ ansible_distribution|lower }} {{ ansible_distribution_release }} {{ docker_apt_release_channel }}"
+docker_apt_ignore_key_error: true
+
+# Used only for RedHat/CentOS/Fedora.
+docker_yum_repo_url: https://download.docker.com/linux/{{ (ansible_distribution == "Fedora") | ternary("fedora","centos") }}/docker-{{ docker_edition }}.repo
+docker_yum_repo_enable_edge: 0
+docker_yum_repo_enable_test: 0
+
+# A list of users who will be added to the docker group.
+docker_users: []
+
+#Harbor options.
+harbor_install: true
+harbor_installation_mode: online
+harbor_release_version: release-1.7.0
+harbor_version: 1.7.1
+harbor_repo_url: "https://storage.googleapis.com/harbor-releases/{{ harbor_release_version }}/harbor-{{ harbor_installation_mode }}-installer-v{{ harbor_version }}.tgz"
+harbor_installation_path: /opt/
+harbor_create_user: true #if user existe set value to false
+harbor_installation_user: harbor
+harbor_installation_group: harbor
+harbor_installation_user_password: '$6$n4GImYmjwg$9z6BFTbJJDDP6TVt7Mpv7I48ARgaCaCR00Mb9XvsrWM6EJaU1SPTfEoh4G96tYLbfvmcyC.19PHNvB0DVMwYj0' #to generate hashed password use mkpasswd command (mkpassword --method=sha-512)
+harbor_config_hostname: "{{ ansible_default_ipv4.address }}"
+harbor_config_admin_password: admin12345
+harbor_config_secretkey_path: /data
+harbor_config_auth_mode: ldap_auth
+harbor_config_ldap_url: ldap://192.168.56.105:20389 # TODO replace with prod values
+harbor_config_ldap_searchdn: cn=linshare,dc=linshare,dc=org # TODO replace with prod values
+harbor_config_ldap_search_pwd: linshare # TODO replace with prod values
+harbor_config_ldap_basedn: ou=People,dc=linshare,dc=org # TODO replace with prod values
+harbor_config_ldap_filter: (objectClass=person)
+harbor_config_ldap_uid: uid 
+harbor_config_ldap_scope: 2 
+harbor_config_ldap_timeout: 5
+harbor_config_ldap_verify_cert: false
+harbor_config_ldap_group_basedn: ou=Groups,dc=linshare,dc=org # TODO replace with prod values
+harbor_config_ldap_group_filter: # TODO replace with prod values
+harbor_config_ldap_group_gid: cn # TODO replace with prod values
+harbor_config_ldap_group_scope: 2
+harbor_https: true
+harbor_deploy_certs: true # set to false if certs is already deployed in machine
+harbor_config_ui_protocol: https
+ssl_cert_name: cert_linagora.cert
+ssl_cert_key_name: cert_linagora.key
+ssl_crt_name: cert_lingora.crt
+ssl_path: /data/cert/
+ssl_cert_path: "{{ ssl_path }}{{ ssl_cert_name }}"
+ssl_cert_key_path: "{{ ssl_path }}{{ ssl_cert_key_name }}"
+harbor_config_ssl_cert: "{{ ssl_cert_path }}"
+harbor_config_ssl_cert_key: "{{ ssl_cert_key_path }}"
+harbor_config_email_server: smtp.mydomain.com
+harbor_config_email_server_port:  25
+harbor_config_email_username: sample_admin@mydomain.com
+harbor_config_email_password: abc
+harbor_config_email_from: admin <sample_admin@mydomain.com>
+harbor_config_email_ssl: false
+harbor_config_email_insecure: false
+harbor_config_db_host: postgresql
+harbor_config_db_password: root123
+harbor_config_db_port: 5432
+harbor_config_db_user: postgres
+harbor_config_redis_host: redis
+harbor_config_redis_port: 6379
+harbor_config_redis_password:  
+harbor_config_redis_db_index:  1,2,3
+#to install NOTARY service add this option --with-notary
+#to install CLAIR service add this option -with-clair
+#to install chart repository add this option --with-chartmuseum
+harbo_installation_options:  --with-clair --with-chartmuseum 
