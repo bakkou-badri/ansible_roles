@@ -1,0 +1,6 @@
+#!/bin/sh
+
+. {{ easy_rsa_dir }}/vars 
+{{ easy_rsa_dir }}/clean-all && \
+		(printf '\n\n\n\n\n\n\n\n') | {{ easy_rsa_dir }}/build-ca && \
+		(printf '\n\n\n\n\n\n\n\n\n\n'; sleep 2; printf 'y\n'; sleep 2; printf 'y\n') | {{ easy_rsa_dir }}/build-key-server {{ server_name }}

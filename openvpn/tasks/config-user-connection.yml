@@ -1,0 +1,28 @@
+---
+- name: Create Authentication Config File
+  file:
+    path: "{{ openvpn_dir }}/auth" 
+    state: directory
+  become: yes 
+
+- name: Config LDAP Authentication
+  template: 
+    src: auth-ldap.conf.j2  
+    dest: "{{ openvpn_dir }}/auth/auth-ldap.conf"
+  when: vpn_user_auth_ldap
+  become: yes 
+
+- name: Update OpenVPN Server Config
+  blockinfile:
+    path: "{{ openvpn_dir}}/server.conf"
+    backup: yes
+    block: |
+      plugin /usr/lib/openvpn/openvpn-auth-ldap.so {{ openvpn_dir}}/auth/auth-ldap.conf
+      client-cert-not-required
+  become: yes
+  notify: openvpn restart
+  when: vpn_user_auth_ldap
+
+#- name: Config PAM Authentication 
+
+

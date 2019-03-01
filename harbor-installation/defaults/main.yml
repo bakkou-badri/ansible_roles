@@ -29,7 +29,6 @@ docker_yum_repo_enable_test: 0
 
 # A list of users who will be added to the docker group.
 docker_users: []
-
 #Harbor options.
 harbor_install: true
 harbor_installation_mode: online
@@ -42,12 +41,25 @@ harbor_installation_user: harbor
 harbor_installation_group: harbor
 harbor_installation_user_password: '$6$n4GImYmjwg$9z6BFTbJJDDP6TVt7Mpv7I48ARgaCaCR00Mb9XvsrWM6EJaU1SPTfEoh4G96tYLbfvmcyC.19PHNvB0DVMwYj0' #to generate hashed password use mkpasswd command (mkpassword --method=sha-512)
 harbor_config_hostname: "{{ ansible_default_ipv4.address }}"
-harbor_config_admin_password: admin12345
+harbor_config_admin_password: !vault |
+                             $ANSIBLE_VAULT;1.1;AES256
+                             64646361653239343437326132653133383139376232663335656534326231643065636536333533
+                             6665333462663762393637616331333139643730363765390a643734373636363531303833623265
+                             62616164313431633137383965623234343435643263373661356538393962326664613466306137
+                             6439383833613261350a653031623333663565386137633336363266383537643735363334663839
+                             3535
 harbor_config_secretkey_path: /data
 harbor_config_auth_mode: ldap_auth
 harbor_config_ldap_url: ldap://192.168.56.105:20389 # TODO replace with prod values
 harbor_config_ldap_searchdn: cn=linshare,dc=linshare,dc=org # TODO replace with prod values
-harbor_config_ldap_search_pwd: linshare # TODO replace with prod values
+# TODO replace with prod values
+harbor_config_ldap_search_pwd: !vault |
+                               $ANSIBLE_VAULT;1.1;AES256
+                               65663065616265613732643931393832396463376338316430613861323637646132393134353563
+                               6464656439363034666631613161376539663237663665640a616666366431376664376139663566
+                               37653230646264353630326235646666613665313439343837616630376435353962373535363662
+                               3738623836656461340a396434666131626264653633336139343361646332663030363262643338
+                               3636
 harbor_config_ldap_basedn: ou=People,dc=linshare,dc=org # TODO replace with prod values
 harbor_config_ldap_filter: (objectClass=person)
 harbor_config_ldap_uid: uid 
@@ -72,12 +84,24 @@ harbor_config_ssl_cert_key: "{{ ssl_cert_key_path }}"
 harbor_config_email_server: smtp.mydomain.com
 harbor_config_email_server_port:  25
 harbor_config_email_username: sample_admin@mydomain.com
-harbor_config_email_password: abc
+harbor_config_email_password: !vault |
+                             $ANSIBLE_VAULT;1.1;AES256
+                             64366235353031303238373831313866373465373235653930306335363937393464333665646361
+                             6534646561636234373161626433373661383730336432310a306666366431396139623039636265
+                             35326663636266653934656365393966313837343133313634643531316234653862663266353066
+                             6130326263323963610a623964303861626561653838383766363530633638653663633365343762
+                             6437
 harbor_config_email_from: admin <sample_admin@mydomain.com>
 harbor_config_email_ssl: false
 harbor_config_email_insecure: false
 harbor_config_db_host: postgresql
-harbor_config_db_password: root123
+harbor_config_db_password: !vault |
+                          $ANSIBLE_VAULT;1.1;AES256
+                          66666361343539323364393865353364316366643534333738376136316533383738373831356237
+                          3966333133306264393134396337356263303262323933360a613235393237643031643061356133
+                          33303437363365303731613364303136303336313664653931363635323939666437323239666438
+                          6538343432616663610a633465343531386465363634663235383466313038363064376630373366
+                          6461
 harbor_config_db_port: 5432
 harbor_config_db_user: postgres
 harbor_config_redis_host: redis

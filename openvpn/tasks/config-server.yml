@@ -1,0 +1,31 @@
+---
+- name: Create Server Config File
+  template:
+    src: server.conf.j2
+    dest: "{{ openvpn_dir }}/server.conf"
+  become: yes
+
+- name: Set IP Forward
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: 1
+    sysctl_set: yes 
+    state: present
+    reload: yes 
+  become: yes
+ 
+  #- name:  Allow OpenVPB Port 
+  #  iptables:
+  #  chain: INPUT
+  #  protocol: 
+  #  destination_port: 
+  #  ctstate: NEW
+  #  syn: match
+  #  jump: ACCEPT
+
+- name: Ensure OpenVPN is started
+  service:
+    name: "{{ openvpn_service }}"
+    state: started
+    enabled: true
+  become: yes   

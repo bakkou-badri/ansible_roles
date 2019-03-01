@@ -1,0 +1,66 @@
+---
+openssl_version: openssl-1.0.0
+openvpn_dir: /etc/openvpn
+openvpn_service: openvpn
+## EASY-RSA CONFIGS
+easy_rsa_dir: "{{ openvpn_dir }}/easy-rsa"
+easy_rsa_key_dir: "{{ easy_rsa_dir }}/keys"
+use_easy_rsa: True
+key_size: 2048
+ca_expire: 3650
+key_expire: 3650
+key_country: "FR"
+key_province: "IDF"
+key_city: "PARIS"
+key_org: "Linagora"
+key_email: "admin@linagora.key_org"
+key_ou: "linagora"
+key_name: ""
+server_name: linagora_openvpn
+clients_name: 
+  - linagora_client
+##END EAST-RSA CONFIGS
+#OPENVPN SERVER CONFIGS
+vpn_port: 1595
+vpn_protocol: udp
+vpn_interface_type: tun
+vpn_ca: "{{ easy_rsa_key_dir }}/ca.crt"
+vpn_cert: "{{ easy_rsa_key_dir }}/{{ server_name }}.crt"
+vpn_key: "{{ easy_rsa_key_dir }}/{{ server_name }}.key"
+vpn_dh: "{{ easy_rsa_key_dir }}/dh{{ key_size }}.pem"
+vpn_external_network: 10.7.0.0 255.255.255.0
+vpn_internals_network:
+  - "route 10.4.0.0 255.255.255.0"
+vpn_dns_linagora: linagora-url-dns 
+vpn_dhcp_options:
+  - "dhcp-option DNS 8.8.8.8"
+  - "dhcp-option DNS 8.8.4.4"
+  - "dhcp-option DNS {{ vpn_dns_linagora }}"
+vpn_max_client: 10
+#END OPENVPN SERVER CONFIGS
+
+#OPENVPN AUTH USERS CONFIG
+vpn_user_auth: true 
+vpn_user_auth_ldap: true 
+vpn_user_auth_pam: false
+vpn_ldap_url: ldap://192.168.56.105:20389 
+vpn_ldap_searchdn: cn=linshare,dc=linshare,dc=org 
+
+vpn_ldap_search_pwd: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          65663065616265613732643931393832396463376338316430613861323637646132393134353563
+          6464656439363034666631613161376539663237663665640a616666366431376664376139663566
+          37653230646264353630326235646666613665313439343837616630376435353962373535363662
+          3738623836656461340a396434666131626264653633336139343361646332663030363262643338
+          3636
+vpn_ldap_basedn: "ou=People,dc=linshare,dc=org"
+vpn_ldap_filter: "(objectClass=person)"
+vpn_ldap_uid: uid 
+vpn_ldap_scope: 2 
+vpn_ldap_timeout: 5
+vpn_ldap_verify_cert: false
+vpn_ldap_group_basedn: "ou=Groups,dc=linshare,dc=org"
+vpn_ldap_group_filter: "(cn=vpn_group)"
+vpn_ldap_user_filter: "(&(sAMAccountName=%u))"
+vpn_ldap_group_gid: cn 
+#END OPENVPB AUTH USERS CONFIG

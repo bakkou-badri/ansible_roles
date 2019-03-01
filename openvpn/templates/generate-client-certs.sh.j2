@@ -1,0 +1,6 @@
+ #!/bin/sh 
+
+. {{ easy_rsa_dir }}/vars
+{% for client_name in clients_name %}
+(printf '\n\n\n\n\n\n\n\n\n\n'; sleep 2; printf 'y\n'; sleep 2; printf 'y\n') | {{ easy_rsa_dir }}/build-key {{ client_name }}
+{% endfor %}

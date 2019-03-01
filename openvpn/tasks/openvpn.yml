@@ -1,0 +1,8 @@
+---
+- include_tasks: easy-rsa.yml
+  when: use_easy_rsa 
+ 
+- include_tasks: config-server.yml
+
+- include_tasks: config-user-connection.yml
+  when: vpn_user_auth

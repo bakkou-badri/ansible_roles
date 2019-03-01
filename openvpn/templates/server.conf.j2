@@ -1,0 +1,42 @@
+port {{ vpn_port }} 
+
+proto {{ vpn_protocol }}
+
+dev {{ vpn_interface_type }}
+
+ca {{ vpn_ca}}
+
+cert {{vpn_cert}}
+
+key {{ vpn_key }}
+
+dh {{ vpn_dh}}
+
+server {{ vpn_external_network }}
+
+{% for route in vpn_internals_network %}
+push "{{ route }}"
+{% endfor %}
+
+{% for option in vpn_dhcp_options%}
+push "{{ option }}"
+{% endfor %}
+
+keepalive 10 120
+
+cipher AES-128-CBC
+
+comp-lzo
+
+max-clients {{ vpn_max_client }}
+
+#pour rendre la connexion persistante
+persist-key
+persist-tun
+
+#fichier de log
+status openvpn-status.log
+
+log openvpn.log
+
+verb 5

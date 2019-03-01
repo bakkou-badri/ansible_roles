@@ -1,0 +1,22 @@
+---
+- name: Ensure old versions of OpenVPN are not installed.
+  package:
+    name:
+      - openvpn
+      - easy-rsa
+    state: absent
+  become: yes
+
+      
+- name: Ensure dependencies are installed.
+  apt:
+    name:
+      - openvpn
+      - easy-rsa
+      - net-tools
+      - openssl
+      - bridge-utils
+      - openvpn-auth-ldap
+    state: present
+  become: yes
+

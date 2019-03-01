@@ -1,0 +1,37 @@
+---
+- name: Copy Easy-rsa Config Files
+  command: "cp -R /usr/share/easy-rsa {{ easy_rsa_dir }}"
+  become: yes  
+
+- name: Create Symlink to openssl version
+  file:
+    src: "{{ easy_rsa_dir }}/{{ openssl_version }}.cnf"
+    dest: "{{ easy_rsa_dir }}/openssl.cnf"
+    state: link 
+  become: yes
+
+- name: Update Vars Files
+  template:
+    src: vars.j2
+    dest: "{{ easy_rsa_dir }}/vars"
+  become: yes
+
+- name: Copy Script
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ openvpn_dir }}/{{ item }}"
+    mode: 0755
+  with_items:
+   - generate-server-certs.sh 
+   - generate-client-certs.sh
+   - generate-dh.sh 
+  become: yes
+
+- name: Generate Certifications
+  command: "sh {{ openvpn_dir }}/{{ item }}"
+  with_items:
+   - generate-server-certs.sh 
+   - generate-client-certs.sh 
+   - generate-dh.sh 
+  become: yes
+
